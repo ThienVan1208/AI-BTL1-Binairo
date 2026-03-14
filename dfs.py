@@ -4,6 +4,7 @@ class DFSSolver(Solver):
     def __init__(self, initial_grid: list[list[int]], grid_size: int):
         super().__init__(initial_grid, grid_size)
         
+        # Use stack for backtracking
         self.stack = [self.initial_state]
         self.visited = set()
 

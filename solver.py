@@ -44,7 +44,7 @@ class Solver(ABC):
                 if col[i] != 0 and col[i] == col[i+1] == col[i+2]:
                     return False
 
-        # 4. Duplicate Column Check (Only for fully filled columns)
+        # Duplicate Column Check (Only for fully filled columns)
         filled_cols = [col for col in cols if 0 not in col]
         if len(filled_cols) != len(set(filled_cols)):
             return False

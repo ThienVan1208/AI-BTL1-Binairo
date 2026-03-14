@@ -2,8 +2,8 @@ import pygame
 import time
 from abc import ABC, abstractmethod
 import sys  
-from a_star import AStarSolver
 from dfs import DFSSolver
+from hill_climbing import HillClimbingSolver
 
 # --- Setup & Constants ---
 pygame.init()
@@ -69,6 +69,9 @@ class TextLabel(UIElement):
         text_surface = FONT.render(self.text, True, self.color)
         text_rect = text_surface.get_rect(center=(self.x + self.width // 2, self.y + self.height // 2))
         screen.blit(text_surface, text_rect)
+
+    def change_text(self, text = ''):
+        self.text = text
 
 
 class Button(UIElement):
@@ -299,7 +302,7 @@ class LevelManager:
         
 class GameManager:
     def __init__(self, solver_type="simple_solver"):
-        initial_level =  [
+        initial_levels =  [
             # Level 1
             [
                 [1, 0, 0, 0, 2, 0],
@@ -400,7 +403,7 @@ class GameManager:
                 [0, 2, 2, 0, 0, 0]
             ]
         ]
-        self.level_manager = LevelManager(initial_level)
+        self.level_manager = LevelManager(initial_levels)
         grid = self.level_manager.get_level(0)
         
         self.grid_manager = GridManager(grid)
@@ -414,10 +417,13 @@ class GameManager:
         solve_button = Button('Fast Solve', (200, 200, 255), x=210, y=10, width=100, height=40, action=self.solve_ai)
         next_level_button = Button('Next level', (200, 200, 255), x=320, y=10, width=100, height=40, action=self.get_next_level)
 
+        self.status_text = TextLabel('status', (0,0,0,255), (SCREEN_WIDTH - 80) // 2, 100, 80, 40)
+
         self.ui_manager.add_element(check_button)
         self.ui_manager.add_element(step_button)
         self.ui_manager.add_element(solve_button)
         self.ui_manager.add_element(next_level_button)
+        self.ui_manager.add_element(self.status_text)
 
         self.popup = PopupWindow()
         self.ui_manager.set_popup(self.popup)
@@ -425,13 +431,17 @@ class GameManager:
         if solver_type == "dfs":
             self.ai_solver = DFSSolver(grid, GRID_SIZE)
             print("--- Initialized DFS Solver ---")
+        elif solver_type == "hill_climbing":
+            self.ai_solver = HillClimbingSolver(grid, GRID_SIZE)
+            print("--- Initialized Hill Climbing Solver ---")
         else:
-            self.ai_solver = AStarSolver(grid, GRID_SIZE)
-            print("--- Initialized A* Solver ---")
+            self.ai_solver = HillClimbingSolver(grid, GRID_SIZE)
+            print("--- Initialized Hill Climbing Solver ---")
 
 
     def get_next_level(self):
         grid = self.level_manager.get_next_level()
+        self.status_text.change_text("status")
         if grid is None: print('next level is none')
 
         else: self.grid_manager = GridManager(grid)
@@ -439,9 +449,12 @@ class GameManager:
         if isinstance(self.ai_solver, DFSSolver):
             self.ai_solver = DFSSolver(grid, GRID_SIZE)
             print("--- Initialized DFS Solver ---")
+        elif isinstance(self.ai_solver, HillClimbingSolver):
+            self.ai_solver = HillClimbingSolver(grid, GRID_SIZE)
+            print("--- Initialized Hill Climbing Solver ---")
         else:
-            self.ai_solver = AStarSolver(grid, GRID_SIZE)
-            print("--- Initialized A* Solver ---")
+            self.ai_solver = HillClimbingSolver(grid, GRID_SIZE)
+            print("--- Initialized Hill Climbing Solver ---")
         
 
 
@@ -478,6 +491,8 @@ class GameManager:
         else:
             print(status)
 
+        self.status_text.change_text(status)
+
     def solve_ai(self):
         if self.ai_solver.is_finished:
             return
@@ -496,6 +511,8 @@ class GameManager:
             self.update_grid_from_state(final_state)
         else:
             print(status)
+        
+        self.status_text.change_text(status)
 
 
 # --- Main Loop ---
@@ -508,6 +525,8 @@ if __name__ == "__main__":
             solver_choice = "dfs"
         elif "a_star" in arg:
             solver_choice = "a_star"
+        elif "hill_climbing" in arg:
+            solver_choice = "hill_climbing"
 
     game_manager = GameManager(solver_choice)
 
@@ -526,8 +545,4 @@ if __name__ == "__main__":
         clock.tick(60)
 
     pygame.quit()
-
-
-
-
 
