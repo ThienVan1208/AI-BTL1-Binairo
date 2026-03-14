@@ -28,14 +28,14 @@ RULE:
 
 
 CONVENTION:
-- Input: 
+- Input: list[list[int]]
 ```
-    [1, 0, 0, 0, 2, 0],
+    [[1, 0, 0, 0, 2, 0],
     [0, 0, 2, 2, 0, 1],
     [0, 2, 1, 0, 0, 1],
     [1, 0, 2, 2, 1, 0],
     [0, 0, 0, 0, 0, 2],
-    [0, 1, 0, 0, 2, 1]
+    [0, 1, 0, 0, 2, 1]]
 ```
     * "0" stands for empty cell.
     * "1" and "2" stand for black and white circles.
@@ -95,7 +95,7 @@ Hill Climbing idea:
 def init():
     max_limit = 0
     cur_limit = 0
-    cur_state = fill_random_value(grid)
+    cur_state = fill_random_value(input)
 
 def get_next_step():
     cur_conflict = count_conflict(cur_state)

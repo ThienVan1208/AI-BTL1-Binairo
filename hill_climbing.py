@@ -5,7 +5,7 @@ class HillClimbingSolver(Solver):
     def __init__(self, initial_grid: list[list[int]], grid_size: int):
         super().__init__(initial_grid, grid_size)
 
-        self.max_limit = 100
+        self.max_limit = 10
         self.cur_limit = 0
         
         # Keep track of which cells we are allowed to change (the original)
@@ -92,7 +92,7 @@ class HillClimbingSolver(Solver):
                 best_conflicts = neighbor_conflicts
                 best_neighbor = new_state_tuple
 
-        # --- The "Local Minimum" Problem ---
+        # --- The "Local Maximum" Problem ---
         # What if NO single flip improves the board? The AI is stuck in a valley!
         if best_neighbor is None:
             # We fix this by doing a "Random Restart" - scramble the board and try again!
@@ -103,7 +103,7 @@ class HillClimbingSolver(Solver):
 
             self. cur_limit += 1
             
-            return self.current_state, f"Stuck in Local Minimum! Random Restarting... (Conflicts: {current_conflicts})"
+            return self.current_state, f"Stuck in Local Maximum! Random Restarting... (Conflicts: {current_conflicts})"
 
         # Move to the best neighbor we found
         self.current_state = best_neighbor
